@@ -25,6 +25,7 @@ public class PetriNetCalc
 
 
 
+
         //Process number of Places
         do
         {
@@ -45,6 +46,10 @@ public class PetriNetCalc
         noPlaces = Integer.parseInt(input);
         System.out.println("\n\n\nYou entered:  " + noPlaces + "\n\n\n");
         places = new Place[noPlaces];
+        for(int i=0; i<noPlaces; i++)
+        {
+            places[i] = new Place((i+1));
+        }
 
 
 
@@ -71,6 +76,10 @@ public class PetriNetCalc
         noTrans = Integer.parseInt(input);
         System.out.println("\n\n\n You entered:  " + noTrans + "\n\n\n");
         trans = new Transition[noTrans];
+        for(int i=0; i<noTrans; i++)
+        {
+            trans[i] = new Transition((i+1));
+        }
 
 
 
