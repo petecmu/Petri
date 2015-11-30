@@ -48,7 +48,7 @@ public class PetriNetCalc
         places = new Place[noPlaces];
         for(int i=0; i<noPlaces; i++)
         {
-            places[i] = new Place((i+1));
+            places[i] = new Place(""+(i+1)+"");
         }
 
 
@@ -78,7 +78,7 @@ public class PetriNetCalc
         trans = new Transition[noTrans];
         for(int i=0; i<noTrans; i++)
         {
-            trans[i] = new Transition((i+1));
+            trans[i] = new Transition(""+(i+1)+"");
         }
 
 
