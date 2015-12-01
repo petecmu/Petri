@@ -7,7 +7,7 @@ public class PetriNetCalc
     {
         //Regex definitions
         final String POS_INT = "\\d+";
-        final String STATE =  "\\(?(\\d+, )*(\\d+)+\\)?";
+        final String STATE =  "[(]?(\\d+, )*(\\d+)+[)]?";
 
 
 
@@ -19,13 +19,14 @@ public class PetriNetCalc
         boolean safeInput=false;
         int noPlaces=0;
         int noTrans=0;
-        Transition[] trans;
-        Place[] places;
+        int transIn[][];
+        int transOut[][];
+        String delim = " ";
 
 
 
 
-
+        
         //Process number of Places
         do
         {
@@ -45,11 +46,6 @@ public class PetriNetCalc
         //Create Places
         noPlaces = Integer.parseInt(input);
         System.out.println("\n\n\nYou entered:  " + noPlaces + "\n\n\n");
-        places = new Place[noPlaces];
-        for(int i=0; i<noPlaces; i++)
-        {
-            places[i] = new Place(""+(i+1)+"");
-        }
 
 
 
@@ -75,17 +71,19 @@ public class PetriNetCalc
         //Create Transitions
         noTrans = Integer.parseInt(input);
         System.out.println("\n\n\n You entered:  " + noTrans + "\n\n\n");
-        trans = new Transition[noTrans];
-        for(int i=0; i<noTrans; i++)
-        {
-            trans[i] = new Transition(""+(i+1)+"");
-        }
+
+        
+        
+        
+        
+        //Create trans Arrays
+        transIn = new int[noTrans][noPlaces];
+        transOut = new int[noTrans][noPlaces];
 
 
 
 
-
-
+        
         //Process Transition Inputs
        for(int i=0; i < noTrans; i++)
        {
@@ -98,13 +96,93 @@ public class PetriNetCalc
                 {
                     safeInput = true;
                     System.out.println();
+                    input = input.replace("(","");
+                    input = input.replace(",", "");
+                    input = input.replace(")", "");
+                    
+                    
+
+                    String[] s;
+                    s = input.split(delim);
+                    
+                    
+                    
+                    for(int j=0; j<noPlaces; j++)
+                    {
+                    	System.out.println(s[j]);
+                    	transIn[i][j] = Integer.parseInt(s[j]);
+                    }
+                    
+                    
+                    
                 }
                 else
                 System.out.println("\n\n\nERROR - Please enter your inputs in the format (int, int, . . . int)" +
                                        "\n--------------------------------------------------------------------\n\n\n");
             }while(!safeInput);
        }
-    }
+            
+       
+            
+            
+            
+            //Process Transition Outputs
+            for(int i=0; i < noTrans; i++)
+            {
+                 safeInput = false;
+                 do
+                 {
+                     System.out.println("Please enter the outputs for Transition " + (i+1) +":  ");
+                     input = in.nextLine();
+                     if(verify(input, noPlaces))
+                     {
+                         safeInput = true;
+                         System.out.println();
+                         input = input.replace("(","");
+                         input = input.replace(",", "");
+                         input = input.replace(")", "");
+                         
+                         
+
+                         String[] s;
+                         s = input.split(delim);
+                         
+                         
+                         
+                         for(int j=0; j<noPlaces; j++)
+                         {
+                        	 System.out.println(s[j]);
+                        	 transOut[i][j] = Integer.parseInt(s[j]);
+                         }
+                     }
+                     else
+                     System.out.println("\n\n\nERROR - Please enter your outputs in the format (int, int, . . . int)" +
+                                            "\n--------------------------------------------------------------------\n\n\n");
+                 }while(!safeInput);
+            }
+            
+            
+            
+            
+            
+            //DEBUG - this block is for debugging only. Makes sure that the values stored inside transIn 
+            //and transOut are making sense
+            for(int i=0; i<noTrans; i++)
+            	for(int j=0; j<noPlaces; j++)
+            	{
+            		System.out.print("[" + transIn[i][j] + "] ");
+            		if(j == noPlaces - 1)
+            			System.out.println();
+            	}
+            
+            
+            
+            
+            
+            in.close();
+       }
+    
+
 
 
 
@@ -130,7 +208,7 @@ public class PetriNetCalc
     //  and accounts for the correct number of places
     private static boolean verify(String s, int num)
     {
-        String tempReg = "\\(?(\\d+, ){"+(num-1)+"}(\\d+)+\\)?";
+        String tempReg = "[(]?(\\d+, ){"+(num-1)+"}(\\d+)+[)]?";
 
         if(s.matches(tempReg))
            return true;
