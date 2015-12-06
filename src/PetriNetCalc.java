@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class PetriNetCalc
@@ -22,6 +23,9 @@ public class PetriNetCalc
     static int transOut[][];
     static String delim = " ";
     static ArrayList<String> markings = new ArrayList<String>();
+    static String currentMarkingAsString;
+    static int[] currentMarking;
+    public static Iterator<String> iter;
 
 
 
@@ -55,26 +59,77 @@ public class PetriNetCalc
 
 
 
-        //DEBUG - this block is for debugging only. Makes sure that the values stored inside transIn
-        //and transOut are making sense
-        for(int i=0; i<noTrans; i++)
-            for(int j=0; j<noPlaces; j++)
-            {
-                System.out.print("[" + transIn[i][j] + "] ");
-                if(j == noPlaces - 1)
-                    System.out.println();
-            }
-
-
-
         getInit();
 
+
+
+        iter = markings.iterator();
+        while(iter.hasNext())
+        {
+            //CHECKPOINT
+            currentMarkingAsString = iter.next();
+            currentMarking = convertMarking(currentMarkingAsString);
+            checkEnabled(currentMarking);
+            for(int i=0; i<noTrans; i++)
+            {
+                //CHECKPOINT
+                if(isEnabled[i])
+                {
+                    //CHECKPOINT
+                    runMarking(currentMarking, i);
+                }
+            }
+        }
+
+        Iterator<String> printer = markings.iterator();
+        printer.next();
+
+        if(printer.hasNext())
+        {
+            System.out.println("The following markings are reachable:  ");
+            System.out.println("---------------------------------------");
+            while(printer.hasNext())
+                System.out.println(printer.next());
+        }
+        else
+        {
+            System.out.println("No additional markings were reachable.\n");
+            System.out.println("Thank you for using Justonicete, the reachability calculator you can rely on, " +
+                    "\nand that was brought to you because it was mandatory.");
+        }
 
 
         in.close();
     }
 
 
+
+
+
+    //This method runs through each transition and, given some marking, checks whether or not its preconditions are met, thus determing whether not each one is enabled.
+    public static void checkEnabled(int[] marking)
+    {
+
+        for(int i=0; i<noTrans; i++)
+        {
+            for(int j=0; j<noPlaces; j++)
+            {
+                //go through each place for the current marking and current transition. If at any point part of its precondition is not met it stops checking and moves on to the next transition.
+                //if it makes it through every transition without "kicking out" it is enabled by the statement isEnabled[i] = true;
+                if(transIn[i][j] > marking[j] && marking[j] != -1)
+                {
+                    isEnabled[i] = false;
+                    j = noPlaces;
+                }
+
+                if(j == noPlaces - 1)
+                {
+                    isEnabled[i] = true;
+                }
+            }
+        }
+
+    }
 
 
 
@@ -124,9 +179,6 @@ public class PetriNetCalc
             {
                 safeInput = true;
                 System.out.println();
-                input = input.replace("(","");
-                input = input.replace(",", "");
-                input = input.replace(")", "");
 
                 markings.add(input);
             }
@@ -143,6 +195,11 @@ public class PetriNetCalc
     //Method converts markings into an array of integers for usability
     private static int[] convertMarking(String in)
     {
+
+        in = in.replace("(","");
+        in = in.replace(",", "");
+        in = in.replace(")", "");
+
         String[] s;
         s = in.split(delim);
         int[] temp = new int[noPlaces];
@@ -151,7 +208,7 @@ public class PetriNetCalc
             temp[i] = Integer.parseInt(s[i]);
         }
 
-        return temp;
+        return temp.clone();
     }
 
 
@@ -160,9 +217,118 @@ public class PetriNetCalc
 
     //Method finds runs through the ArrayList markings and uses the markings within it to create a new markings until no
     //unique markings are generated.
-    private static void runMarkings()
+    private static void runMarking(int[] marking, int trans)
     {
+        String newMarking;
+        if(marking[0] != -1)
+            newMarking=""+(marking[0] - transIn[trans][0] + transOut[trans][0]);
+        else
+            newMarking="-1";
 
+        for(int i=1; i<noPlaces; i++)
+        {
+            if(marking[i] != -1)
+                newMarking = newMarking + ", " + (marking[i] - transIn[trans][i] + transOut[trans][i]);
+            else
+                newMarking = newMarking + ", " + "-1";
+        }
+
+        System.out.println(newMarking);
+
+        Iterator<String> it = markings.iterator();
+        while(it.hasNext())
+        {
+            String test = it.next();
+            if(newMarking.compareTo(test) != 0)
+            {
+                int[] old = convertMarking(test);
+                int[] deltaM = calcDelta(old, convertMarking(newMarking));
+
+                boolean unique=true;
+
+                for(int i=0; i<noPlaces; i++)
+                {
+                    if(deltaM[i] <= 0)
+                    {
+                        unique = false;
+                        break;
+                    }
+                }
+
+
+
+                if(unique)
+                {
+                    markings.add(newMarking);
+                }
+                else
+                {
+                    int[] replacement = convertMarking(newMarking);
+                    calcOmega(deltaM, replacement);
+
+                    if(deltaM[0] == -2)
+                        newMarking = "(-1";
+                    else
+                        newMarking = "" + replacement[0];
+
+                    for(int i=1; i<noPlaces; i++)
+                    {
+                        if(deltaM[i] == -2)
+                            newMarking = newMarking + " -1";
+                        else
+                            newMarking = newMarking + " " +replacement[i];
+                    }
+                    newMarking = newMarking + ")";
+
+                    currentMarkingAsString = newMarking;
+                }
+
+
+
+                for(int i=0; i<noPlaces; i++)
+                {
+                    if(old[i] > 0 && transOut[trans][i] > 0)
+                        old[i] = -1;
+                }
+
+            }
+
+        }
+
+    }
+
+
+
+
+
+    //Calculates the difference between two markings placewise
+    private static int[] calcDelta(int[] oldMark, int[] newMark)
+    {
+        int[] retValue = new int[noPlaces];
+
+        for(int i=0; i<noPlaces; i++)
+        {
+            if(oldMark[i] == -1)
+            {
+                retValue[i] = -2; //represents an omega token at one of the positions
+            }
+            else
+                retValue[i] = Math.abs(newMark[i] - oldMark[i]);
+        }
+
+        return retValue.clone();
+    }
+
+
+
+
+
+    //Calculates omega tokens (-1)
+    private static void calcOmega(int[] delta, int[] newMark)
+    {
+        for(int i=0; i<noPlaces; i++)
+            if(delta[i] > 0)
+                newMark[i] = -1;
     }
 
 
