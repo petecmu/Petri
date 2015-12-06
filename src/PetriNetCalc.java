@@ -25,7 +25,9 @@ public class PetriNetCalc
     static ArrayList<String> markings = new ArrayList<String>();
     static String currentMarkingAsString;
     static int[] currentMarking;
-    public static Iterator<String> iter;
+    static Iterator<String> iter;
+    static ArrayList<String> fired = new ArrayList<String>();
+    static ArrayList<String> toBeAdded = new ArrayList<String>();
 
 
 
@@ -63,26 +65,50 @@ public class PetriNetCalc
 
 
 
-        iter = markings.iterator();
-        while(iter.hasNext())
+        do
         {
-            //CHECKPOINT
-            currentMarkingAsString = iter.next();
-            currentMarking = convertMarking(currentMarkingAsString);
-            checkEnabled(currentMarking);
-            for(int i=0; i<noTrans; i++)
+            iter = toBeAdded.iterator();
+            while(iter.hasNext())
+            {
+                String add = iter.next();
+                markings.add(add);
+            }
+            toBeAdded.clear();
+            iter = markings.iterator();
+
+            while(iter.hasNext())
             {
                 //CHECKPOINT
-                if(isEnabled[i])
+                currentMarkingAsString = iter.next();
+                if(!fired.contains(currentMarkingAsString))
                 {
-                    //CHECKPOINT
-                    runMarking(currentMarking, i);
+                    fired.add(currentMarkingAsString);
+                    currentMarking = convertMarking(currentMarkingAsString);
+                    checkEnabled(currentMarking);
+                    for(int i=0; i<noTrans; i++)
+                    {
+                        //CHECKPOINT
+                        if(isEnabled[i])
+                        {
+                            //CHECKPOINT
+                            runMarking(currentMarking, i);
+                        }
+                    }
+
+                    //CHECKPOINT - DEBUG
+                    System.out.println("Entire try executed");
+
+
+                    //CHECKPOINT - DEBUG
                 }
             }
-        }
+        }while(!toBeAdded.isEmpty());
+
+
+        //CHECKPOINT - DEBUG
+        System.out.println("MADE IT HERE");
 
         Iterator<String> printer = markings.iterator();
-        printer.next();
 
         if(printer.hasNext())
         {
@@ -180,6 +206,7 @@ public class PetriNetCalc
                 safeInput = true;
                 System.out.println();
 
+                input = convertInitial(input);
                 markings.add(input);
             }
             else
@@ -215,6 +242,25 @@ public class PetriNetCalc
 
 
 
+    //Converts the initial marking to the format (int, int, . . . int)
+    private static String convertInitial(String in)
+    {
+        int[] raw = convertMarking(in);
+        String retVal = "(" + raw[0];
+
+        for(int i=1; i<raw.length; i++)
+        {
+            retVal = retVal + ", " + raw[i];
+        }
+        retVal = retVal + ")";
+
+        return retVal;
+    }
+
+
+
+
+
     //Method finds runs through the ArrayList markings and uses the markings within it to create a new markings until no
     //unique markings are generated.
     private static void runMarking(int[] marking, int trans)
@@ -233,68 +279,108 @@ public class PetriNetCalc
                 newMarking = newMarking + ", " + "-1";
         }
 
-        System.out.println(newMarking);
-
         Iterator<String> it = markings.iterator();
+        boolean unique=true;
         while(it.hasNext())
         {
-            String test = it.next();
-            if(newMarking.compareTo(test) != 0)
+            try
             {
-                int[] old = convertMarking(test);
-                int[] deltaM = calcDelta(old, convertMarking(newMarking));
+                String oldMarking = it.next();
 
-                boolean unique=true;
+                //DEBUG - CHECKPOINT
+                System.out.println("oldMarking = " + oldMarking);
+                System.out.println("Iter = " + currentMarkingAsString);
+                System.out.println("newMarking = " + newMarking);
 
-                for(int i=0; i<noPlaces; i++)
+                if(newMarking.compareTo(oldMarking) != 0)
                 {
-                    if(deltaM[i] <= 0)
+                    //CHECKPOINT
+                    //System.out.println("NewMarking not equal");
+
+                    int[] old = convertMarking(oldMarking);
+
+                    int[] deltaM = calcDelta(old, convertMarking(newMarking));
+
+
+
+                    //CHECKPOINT - DEBUG
+                    /*
+                    for (int i= 0; i<deltaM.length; i++)
                     {
-                        unique = false;
-                        break;
+                        System.out.println(deltaM[i]);
                     }
-                }
+                    */
 
 
 
-                if(unique)
-                {
-                    markings.add(newMarking);
-                }
-                else
-                {
-                    int[] replacement = convertMarking(newMarking);
-                    calcOmega(deltaM, replacement);
+                    int noOfZero = 0;
 
-                    if(deltaM[0] == -2)
-                        newMarking = "(-1";
+                    for(int i=0; i<noPlaces; i++)
+                    {
+                        if(deltaM[i] == 0)
+                        {
+                            noOfZero ++;
+                        }
+                    }
+
+                    if(noOfZero == noPlaces)
+                        unique=false;
+
+
+
+                    //CHECKPOINT
+                    /*
+                    if(unique)
+                        System.out.println("Unique");
                     else
-                        newMarking = "" + replacement[0];
+                        System.out.println("NOT unique");*/
 
-                    for(int i=1; i<noPlaces; i++)
+
+
+                    if(unique)
                     {
-                        if(deltaM[i] == -2)
-                            newMarking = newMarking + " -1";
-                        else
-                            newMarking = newMarking + " " +replacement[i];
+                        int numberOfPos = 0;
+                        int numberOfNeg = 0;
+
+                        for( int i=0; i<noPlaces; i++)
+                        {
+                            if(deltaM[i] > 0)
+                                numberOfPos ++;
+                            if(deltaM[i] < 0)
+                                numberOfNeg ++;
+                            if(numberOfNeg > 0)
+                                break;
+                        }
+
+                        if(numberOfNeg == 0 && numberOfPos > 0)
+                        {
+                            int [] replacement = convertMarking(newMarking);
+                            calcOmega(deltaM, replacement);
+
+
+                            newMarking = "(" + replacement[0];
+
+                            for(int i=1; i<noPlaces; i++)
+                            {
+                                newMarking = newMarking + ", " + replacement[i];
+                            }
+                            newMarking = newMarking + ")";
+                        }
                     }
-                    newMarking = newMarking + ")";
-
-                    currentMarkingAsString = newMarking;
                 }
 
-
-
-                for(int i=0; i<noPlaces; i++)
-                {
-                    if(old[i] > 0 && transOut[trans][i] > 0)
-                        old[i] = -1;
-                }
-
+                //CHECKPOINT
+            }
+            catch(Exception e)
+            {
+                continue;
             }
 
         }
 
+        //ADD MARKINGS HERE
+        if(unique)
+            toBeAdded.add(newMarking);
     }
 
 
@@ -310,10 +396,10 @@ public class PetriNetCalc
         {
             if(oldMark[i] == -1)
             {
-                retValue[i] = -2; //represents an omega token at one of the positions
+                retValue[i] = 0; //represents an omega token at one of the positions
             }
             else
-                retValue[i] = Math.abs(newMark[i] - oldMark[i]);
+                retValue[i] = newMark[i] - oldMark[i];
         }
 
         return retValue.clone();
