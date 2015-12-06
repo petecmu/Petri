@@ -4,30 +4,30 @@ import java.util.Scanner;
 public class PetriNetCalc
 {
     //Regex definitions
+    // static final String STATE =  "[(]?(\\d+, )*(\\d+)+[)]?";
     static final String POS_INT = "\\d+";
-    static final String STATE =  "[(]?(\\d+, )*(\\d+)+[)]?";
 
 
 
 
 
     //Variable declarations
-    Scanner in = new Scanner(System.in);
-    String input;
-    boolean safeInput=false;
-    int noPlaces=0;
-    int noTrans=0;
-    boolean[] isEnabled;
-    int transIn[][];
-    int transOut[][];
-    String delim = " ";
-    ArrayList<String> markings = new ArrayList<String>();
+    static Scanner in = new Scanner(System.in);
+    static String input;
+    static boolean safeInput=false;
+    static int noPlaces=0;
+    static int noTrans=0;
+    static boolean[] isEnabled;
+    static int transIn[][];
+    static int transOut[][];
+    static String delim = " ";
+    static ArrayList<String> markings = new ArrayList<String>();
 
 
 
 
 
-    public void main(String[] args)
+    public static void main(String[] args)
     {
         //Process number of Places
         getNumPlaces();
@@ -37,24 +37,24 @@ public class PetriNetCalc
         //Process number of Transitions
         getNumTrans();
 
-        
+
 
         //Create trans Arrays
         transIn = new int[noTrans][noPlaces];
         transOut = new int[noTrans][noPlaces];
 
 
-        
+
         //Process Transition Inputs
         processTransIn();
 
 
-            
+
         //Process Transition Outputs
         processTransOut();
-            
-            
-            
+
+
+
         //DEBUG - this block is for debugging only. Makes sure that the values stored inside transIn
         //and transOut are making sense
         for(int i=0; i<noTrans; i++)
@@ -73,7 +73,7 @@ public class PetriNetCalc
 
         in.close();
     }
-    
+
 
 
 
@@ -81,7 +81,7 @@ public class PetriNetCalc
 
 
     //String s is any string (the input variable is expected) and String reg is a regular expression (a predefined regex variable is expected)
-    private boolean verify(String s, String reg)
+    private static boolean verify(String s, String reg)
     {
         if(s.matches(reg))
             return true;
@@ -98,14 +98,14 @@ public class PetriNetCalc
     //It also makes sure that it has the correct number of places determined by "int num"
     //Typical call would look like verify(input, noPlaces) which will make sure that the input is in the appropriate format
     //  and accounts for the correct number of places
-    private boolean verify(String s, int num)
+    private static boolean verify(String s, int num)
     {
         String tempReg = "[(]?(\\d+, ){"+(num-1)+"}(\\d+)+[)]?";
 
         if(s.matches(tempReg))
-           return true;
+            return true;
         else
-           return false;
+            return false;
     }
 
 
@@ -113,7 +113,7 @@ public class PetriNetCalc
 
 
     //Method asks for and stores initial Marking
-    private void getInit()
+    private static void getInit()
     {
         safeInput = false;
         do
@@ -132,7 +132,7 @@ public class PetriNetCalc
             }
             else
                 System.out.println("\n\n\nERROR - Please enter your marking in the format (int, int, . . . int)" +
-                                       "\n--------------------------------------------------------------------\n\n\n");
+                        "\n--------------------------------------------------------------------\n\n\n");
         }while(!safeInput);
     }
 
@@ -141,7 +141,7 @@ public class PetriNetCalc
 
 
     //Method converts markings into an array of integers for usability
-    private int[] convertMarking(String in)
+    private static int[] convertMarking(String in)
     {
         String[] s;
         s = in.split(delim);
@@ -160,7 +160,7 @@ public class PetriNetCalc
 
     //Method finds runs through the ArrayList markings and uses the markings within it to create a new markings until no
     //unique markings are generated.
-    private void runMarkings()
+    private static void runMarkings()
     {
 
     }
@@ -170,7 +170,7 @@ public class PetriNetCalc
 
 
     //Process Transout
-    private void processTransOut()
+    private static void processTransOut()
     {
         for(int i=0; i < noTrans; i++)
         {
@@ -212,7 +212,7 @@ public class PetriNetCalc
 
 
     //Get Number of Places
-    private void getNumPlaces()
+    private static void getNumPlaces()
     {
         do
         {
@@ -234,7 +234,7 @@ public class PetriNetCalc
 
 
     //Get number of trans
-    private void getNumTrans()
+    private static void getNumTrans()
     {
         safeInput = false;
         do
@@ -255,15 +255,15 @@ public class PetriNetCalc
         System.out.println("\n\n\n You entered:  " + noTrans + "\n\n\n");
         isEnabled = new boolean[noTrans];
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     //takes a postcondition and determines whether or not each transition is enabled
-    public void enabledChecker(String marking)
+    public static void enabledChecker(String marking)
     {
-        
+
     }
 
 
@@ -272,7 +272,7 @@ public class PetriNetCalc
 
 
     //Process transIn
-    private void processTransIn()
+    private static void processTransIn()
     {
         for(int i=0; i < noTrans; i++)
         {
