@@ -208,6 +208,10 @@ public class PetriNetCalc
         {
             System.out.println("Please enter the initial marking for your Net:  ");
             input = in.nextLine();
+
+            //NEWEST - CHECKPOINT
+            input = input.trim();
+
             if(verify(input, noPlaces))
             {
                 safeInput = true;
@@ -444,6 +448,11 @@ public class PetriNetCalc
             {
                 System.out.println("Please enter the outputs for Transition " + (i+1) +":  ");
                 input = in.nextLine();
+
+
+                //NEWEST - CHECKPOINT
+                input = input.trim();
+
                 if(verify(input, noPlaces))
                 {
                     safeInput = true;
@@ -484,6 +493,10 @@ public class PetriNetCalc
         {
             System.out.println("Please enter the number of Places in your net:  ");
             input = in.nextLine();
+
+            //NEWEST - CHECKPOINT
+            input = input.trim();
+
             if(verify(input, POS_INT))
                 safeInput = true;
             else
@@ -507,6 +520,10 @@ public class PetriNetCalc
         {
             System.out.println("Please enter the number of Transitions in your net:  ");
             input = in.nextLine();
+
+            //NEWEST - CHECKPOINT
+            input = input.trim();
+
             if(verify(input, POS_INT))
                 safeInput = true;
             else
@@ -558,6 +575,10 @@ public class PetriNetCalc
             {
                 System.out.println("Please enter the inputs for Transition " + (i+1) +":  ");
                 input = in.nextLine();
+
+                //NEWEST - CHECKPOINT
+                input = input.trim();
+                
                 if(verify(input, noPlaces))
                 {
                     safeInput = true;
