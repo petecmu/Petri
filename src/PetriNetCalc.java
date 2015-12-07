@@ -116,7 +116,7 @@ public class PetriNetCalc
             System.out.println("The following markings are reachable:  ");
             System.out.println("---------------------------------------");
             while(printer.hasNext())
-                System.out.println(printer.next());
+                System.out.println(replaceNegs(printer.next()));
         }
         else
         {
@@ -523,6 +523,16 @@ public class PetriNetCalc
     {
 
     }
+
+
+
+
+
+    public static String replaceNegs(String s)
+    {
+        return s.replace("-1", "w");
+    }
+
 
 
 
