@@ -578,7 +578,7 @@ public class PetriNetCalc
 
                 //NEWEST - CHECKPOINT
                 input = input.trim();
-                
+
                 if(verify(input, noPlaces))
                 {
                     safeInput = true;
