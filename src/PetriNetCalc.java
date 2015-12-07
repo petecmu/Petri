@@ -12,28 +12,32 @@ public class PetriNetCalc
 
 
 
-    //Variable declarations
-    static Scanner in = new Scanner(System.in);
-    static String input;
-    static boolean safeInput=false;
-    static int noPlaces=0;
-    static int noTrans=0;
-    static boolean[] isEnabled;
-    static int transIn[][];
-    static int transOut[][];
-    static String delim = " ";
-    static ArrayList<String> markings = new ArrayList<String>();
-    static String currentMarkingAsString;
-    static int[] currentMarking;
-    static Iterator<String> iter;
-    static ArrayList<String> fired = new ArrayList<String>();
-    static ArrayList<String> toBeAdded = new ArrayList<String>();
+    //Variable Declarations
+    Scanner in = new Scanner(System.in);
+    String input;
+    boolean safeInput=false;
+    int noPlaces=0;
+    int noTrans=0;
+    boolean[] isEnabled;
+    int transIn[][];
+    int transOut[][];
+    String delim = " ";
+    ArrayList<String> markings = new ArrayList<String>();
+    String currentMarkingAsString;
+    int[] currentMarking;
+    Iterator<String> iter;
+    ArrayList<String> fired = new ArrayList<String>();
+    ArrayList<String> toBeAdded = new ArrayList<String>();
+
+    public PetriNetCalc()
+    {
+    }
 
 
 
 
 
-    public static void main(String[] args)
+    public void run()
     {
         //Process number of Places
         getNumPlaces();
@@ -140,7 +144,7 @@ public class PetriNetCalc
 
 
     //This method runs through each transition and, given some marking, checks whether or not its preconditions are met, thus determing whether not each one is enabled.
-    public static void checkEnabled(int[] marking)
+    public void checkEnabled(int[] marking)
     {
 
         for(int i=0; i<noTrans; i++)
@@ -186,7 +190,7 @@ public class PetriNetCalc
     //It also makes sure that it has the correct number of places determined by "int num"
     //Typical call would look like verify(input, noPlaces) which will make sure that the input is in the appropriate format
     //  and accounts for the correct number of places
-    private static boolean verify(String s, int num)
+    private boolean verify(String s, int num)
     {
         String tempReg = "[(]?((\\d+, )|(\\d+ )){"+(num-1)+"}(\\d+)+[)]?";
 
@@ -201,7 +205,7 @@ public class PetriNetCalc
 
 
     //Method asks for and stores initial Marking
-    private static void getInit()
+    private void getInit()
     {
         safeInput = false;
         do
@@ -232,7 +236,7 @@ public class PetriNetCalc
 
 
     //Method converts markings into an array of integers for usability
-    private static int[] convertMarking(String in)
+    private int[] convertMarking(String in)
     {
 
         in = in.replace("(","");
@@ -255,7 +259,7 @@ public class PetriNetCalc
 
 
     //Converts the initial marking to the format (int, int, . . . int)
-    private static String convertInitial(String in)
+    private String convertInitial(String in)
     {
         int[] raw = convertMarking(in);
         String retVal = "(" + raw[0];
@@ -275,7 +279,7 @@ public class PetriNetCalc
 
     //Method finds runs through the ArrayList markings and uses the markings within it to create a new markings until no
     //unique markings are generated.
-    private static void runMarking(int[] marking, int trans)
+    private void runMarking(int[] marking, int trans)
     {
         String newMarking;
         if(marking[0] != -1)
@@ -405,7 +409,7 @@ public class PetriNetCalc
 
 
     //Calculates the difference between two markings placewise
-    private static int[] calcDelta(int[] oldMark, int[] newMark)
+    private int[] calcDelta(int[] oldMark, int[] newMark)
     {
         int[] retValue = new int[noPlaces];
 
@@ -427,7 +431,7 @@ public class PetriNetCalc
 
 
     //Calculates omega tokens (-1)
-    private static void calcOmega(int[] delta, int[] newMark)
+    private void calcOmega(int[] delta, int[] newMark)
     {
         for(int i=0; i<noPlaces; i++)
             if(delta[i] > 0)
@@ -439,7 +443,7 @@ public class PetriNetCalc
 
 
     //Process Transout
-    private static void processTransOut()
+    private void processTransOut()
     {
         for(int i=0; i < noTrans; i++)
         {
@@ -487,7 +491,7 @@ public class PetriNetCalc
 
 
     //Get Number of Places
-    private static void getNumPlaces()
+    private void getNumPlaces()
     {
         do
         {
@@ -513,7 +517,7 @@ public class PetriNetCalc
 
 
     //Get number of trans
-    private static void getNumTrans()
+    private void getNumTrans()
     {
         safeInput = false;
         do
@@ -544,7 +548,7 @@ public class PetriNetCalc
 
 
     //takes a postcondition and determines whether or not each transition is enabled
-    public static void enabledChecker(String marking)
+    public void enabledChecker(String marking)
     {
 
     }
@@ -553,7 +557,7 @@ public class PetriNetCalc
 
 
 
-    public static String replaceNegs(String s)
+    public String replaceNegs(String s)
     {
         return s.replace("-1", "w");
     }
@@ -565,7 +569,7 @@ public class PetriNetCalc
 
 
     //Process transIn
-    private static void processTransIn()
+    private void processTransIn()
     {
         for(int i=0; i < noTrans; i++)
         {
