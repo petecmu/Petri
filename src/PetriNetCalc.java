@@ -51,6 +51,12 @@ public class PetriNetCalc
 
 
 
+        System.out.println("Enter your input in the format (int, int, . . . int)" +
+                "\nYou may also separate your integers by spaces by excluding the comma." +
+                "\nNegative values will not be accepted.");
+
+
+
         //Process Transition Inputs
         processTransIn();
 
@@ -212,7 +218,8 @@ public class PetriNetCalc
             }
             else
                 System.out.println("\n\n\nERROR - Please enter your marking in the format (int, int, . . . int)" +
-                        "\n--------------------------------------------------------------------\n\n\n");
+                                   "\nInclude only positive values and make sure you account for the correct number of places." +
+                                   "\n----------------------------------------------------------------------------------------\n\n\n");
         }while(!safeInput);
     }
 
@@ -459,8 +466,9 @@ public class PetriNetCalc
                     }
                 }
                 else
-                    System.out.println("\n\n\nERROR - Please enter your outputs in the format (int, int, . . . int)" +
-                            "\n--------------------------------------------------------------------\n\n\n");
+                    System.out.println("\n\n\nERROR - Please enter your marking in the format (int, int, . . . int)" +
+                            "\nInclude only positive values and make sure you account for the correct number of places." +
+                            "\n----------------------------------------------------------------------------------------\n\n\n");
             }while(!safeInput);
         }
     }
@@ -544,6 +552,7 @@ public class PetriNetCalc
     {
         for(int i=0; i < noTrans; i++)
         {
+
             safeInput = false;
             do
             {
@@ -574,8 +583,9 @@ public class PetriNetCalc
 
                 }
                 else
-                    System.out.println("\n\n\nERROR - Please enter your inputs in the format (int, int, . . . int)" +
-                            "\n--------------------------------------------------------------------\n\n\n");
+                    System.out.println("\n\n\nERROR - Please enter your marking in the format (int, int, . . . int)" +
+                            "\nInclude only positive values and make sure you account for the correct number of places." +
+                            "\n----------------------------------------------------------------------------------------\n\n\n");
             }while(!safeInput);
         }
     }
