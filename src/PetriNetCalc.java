@@ -182,7 +182,7 @@ public class PetriNetCalc
     //  and accounts for the correct number of places
     private static boolean verify(String s, int num)
     {
-        String tempReg = "[(]?(\\d+([, ]|[ ])){"+(num-1)+"}(\\d+)+[)]?";
+        String tempReg = "[(]?((\\d+, )|(\\d+ )){"+(num-1)+"}(\\d+)+[)]?";
 
         if(s.matches(tempReg))
             return true;
@@ -386,7 +386,7 @@ public class PetriNetCalc
         //ADD MARKINGS HERE
         if(unique)
             if(!toBeAdded.contains(convertInitial(newMarking)));
-                toBeAdded.add(convertInitial(newMarking));
+        toBeAdded.add(convertInitial(newMarking));
     }
 
 
