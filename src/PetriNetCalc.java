@@ -71,7 +71,8 @@ public class PetriNetCalc
             while(iter.hasNext())
             {
                 String add = iter.next();
-                markings.add(add);
+                if(!markings.contains(add))
+                    markings.add(add);
             }
             toBeAdded.clear();
             iter = markings.iterator();
@@ -181,7 +182,7 @@ public class PetriNetCalc
     //  and accounts for the correct number of places
     private static boolean verify(String s, int num)
     {
-        String tempReg = "[(]?(\\d+, ){"+(num-1)+"}(\\d+)+[)]?";
+        String tempReg = "[(]?(\\d+([, ]|[ ])){"+(num-1)+"}(\\d+)+[)]?";
 
         if(s.matches(tempReg))
             return true;
@@ -278,6 +279,10 @@ public class PetriNetCalc
             else
                 newMarking = newMarking + ", " + "-1";
         }
+
+
+        //CHECKPOINT - LOOK HERE
+        newMarking = convertInitial(newMarking);
 
         Iterator<String> it = markings.iterator();
         boolean unique=true;
@@ -380,7 +385,8 @@ public class PetriNetCalc
 
         //ADD MARKINGS HERE
         if(unique)
-            toBeAdded.add(newMarking);
+            if(!toBeAdded.contains(convertInitial(newMarking)));
+                toBeAdded.add(convertInitial(newMarking));
     }
 
 
